@@ -72,13 +72,26 @@ void x_task(void *p) {
     // Select ADC input 1 (GPIO27)
     adc_select_input(ADC_X_ID);
 
+    int valores[5] = {0,0,0,0,0};
     adc_t data;
 
     while (1) {
         int valor_analogico_x = converte_valor(adc_read()); // Lê o valor analógico do pino ADC
-        printf("Valor analógico X: %d\n", valor_analogico_x);
+
+        for(int k=0;k<4;k++){
+            valores[k]=valores[k+1];
+        }
+        valores[4]=valor_analogico_x;
+
+        int soma = 0;
+        for(int j=0; j<5; j++){
+            soma += valores[j];
+        }
+        int m=soma/5;
+
         data.axis = 0;
-        data.val = valor_analogico_x;
+        data.val = m;
+        printf("Valor analógico X: %d e %d\n", m, valor_analogico_x);
         xQueueSend(xQueueAdc, &data, 0);
 
         vTaskDelay(pdMS_TO_TICKS(500));
@@ -92,15 +105,28 @@ void y_task(void *p) {
     // Select ADC input 1 (GPIO27)
     adc_select_input(ADC_Y_ID);
     adc_t data;
+    int valores[5] = {0,0,0,0,0};
 
 
     while (1) {
         int valor_analogico_y = converte_valor(adc_read()); // Lê o valor analógico do pino ADC
+
+        for(int k=0;k<4;k++){
+            valores[k]=valores[k+1];
+        }
+        valores[4]=valor_analogico_y;
+
+        int soma = 0;
+        for(int j=0; j<5; j++){
+            soma += valores[j];
+        }
+        int m=soma/5;
+
         data.axis = 1;
-        data.val = valor_analogico_y;
+        data.val = m;
         xQueueSend(xQueueAdc, &data, 0);
 
-        printf("Valor analógico Y: %d\n", valor_analogico_y);
+        printf("Valor analógico Y: %d e %d \n", m, valor_analogico_y);
 
         vTaskDelay(pdMS_TO_TICKS(500));
         
